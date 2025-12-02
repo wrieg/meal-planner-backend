@@ -44,6 +44,13 @@ app.use((req, res, next) => {
 
 app.use('/api/auth', authRoutes);
 
+// Import recipe routes at the top with other imports
+const recipeRoutes = require('./src/routes/recipeRoutes');
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/recipes', recipeRoutes);  // ADD THIS LINE
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ 
