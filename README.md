@@ -1,4 +1,4 @@
-# MealPrep Pro - Backend API
+# ForDinner - Backend API
 
 **Phase 2 Deliverable**: Node.js/Express backend with PostgreSQL database and JWT authentication for a personalized meal planning application.
 
@@ -6,7 +6,7 @@
 
 ## 🎯 Project Overview
 
-MealPrep Pro helps users plan meals by providing personalized dinner recipes based on:
+ForDinner helps users plan meals by providing personalized dinner recipes based on:
 - Available cooking time
 - Pantry and refrigerator ingredients
 - Dietary preferences
@@ -121,7 +121,7 @@ Check if the API is running.
 ```json
 {
   "status": "OK",
-  "message": "MealPrep Pro API is running",
+  "message": "ForDinner API is running",
   "timestamp": "2024-12-02T...",
   "version": "1.0.0"
 }
@@ -370,7 +370,7 @@ The API returns consistent error responses:
 
 **Your Name**
 - GitHub: [@wrieg](https://github.com/wrieg)
-- Project: MealPrep Pro Backend API
+- Project: ForDinner Backend API
 - Course: CSCI 2999
 - Semester: Fall 2025
 

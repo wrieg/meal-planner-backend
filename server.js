@@ -5,7 +5,6 @@ require('dotenv').config();
 // Import database config
 const { testConnection } = require('./src/config/database');
 
-// Import routes - COMMENT THIS OUT FOR NOW
 const authRoutes = require('./src/routes/authRoutes');
 
 // Initialize Express app
@@ -27,7 +26,7 @@ app.use((req, res, next) => {
 app.get('/api/health', (req, res) => {
   res.status(200).json({ 
     status: 'OK', 
-    message: 'MealPrep Pro API is running',
+    message: 'ForDinner API is running',
     timestamp: new Date().toISOString(),
     version: '1.0.0'
   });
@@ -43,7 +42,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// API Routes - COMMENT THIS OUT FOR NOW
 app.use('/api/auth', authRoutes);
 
 // 404 handler
@@ -66,7 +64,7 @@ app.use((err, req, res, next) => {
 // Start server
 const server = app.listen(PORT, () => {
   console.log('=================================');
-  console.log(`🚀 MealPrep Pro API Server Started`);
+  console.log(`🚀 ForDinner API Server Started`);
   console.log(`📡 Port: ${PORT}`);
   console.log(`🌐 URL: http://localhost:${PORT}`);
   console.log(`💚 Health: http://localhost:5000/api/health`);

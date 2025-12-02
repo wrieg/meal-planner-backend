@@ -12,7 +12,7 @@ const pool = new Pool({
 
 // Connection event handlers
 pool.on('connect', () => {
-  console.log('✅ Connected to MealPrep Pro database');
+  console.log('✅ Connected to ForDinner database');
 });
 
 pool.on('error', (err) => {
