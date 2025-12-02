@@ -72,9 +72,9 @@ Create a `.env` file in the root directory:
 # Database Configuration
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=meal_planner_db
+DB_NAME=MealPlannerApp
 DB_USER=postgres
-DB_PASSWORD=your_postgres_password
+DB_PASSWORD=
 
 # Server Configuration
 PORT=5000
