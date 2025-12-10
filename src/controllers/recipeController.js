@@ -270,11 +270,111 @@ const deleteSavedRecipe = async (req, res) => {
   }
 };
 
+// ==================== GENERATE GROCERY LIST FROM RECIPES ====================
+
+const generateGroceryList = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { recipeIds } = req.body;
+
+    if (!recipeIds || !Array.isArray(recipeIds) || recipeIds.length === 0) {
+      return res.status(400).json({ error: 'Recipe IDs array is required' });
+    }
+
+    // Ensure recipe IDs are integers
+    const recipeIdsInt = recipeIds.map(id => parseInt(id, 10));
+
+    // 1️⃣ Fetch all ingredients needed for recipes
+    const recipeIngredientsResult = await pool.query(
+      `SELECT
+        ri.recipe_id,
+        i.ingredient_id,
+        i.ingredient_name,
+        i.category,
+        ri.quantity
+       FROM recipe_ingredients ri
+       JOIN ingredients i ON ri.ingredient_id = i.ingredient_id
+       WHERE ri.recipe_id = ANY($1::text[])`,
+      [recipeIdsInt]
+    );
+
+    // 2️⃣ Fetch user's pantry items
+    const pantryResult = await pool.query(
+      `SELECT 
+         up.ingredient_id AS ingredient_id,
+         i.ingredient_name,
+         up.quantity AS pantry_quantity
+       FROM user_pantry up
+       JOIN ingredients i ON up.ingredient_id = i.ingredient_id
+       WHERE up.user_id = $1`,
+      [userId]
+    );
+
+    const pantryIngredientIds = new Set(
+      pantryResult.rows.map(item => item.ingredient_id)
+    );
+
+    // 3️⃣ Filter out ingredients the user already has
+    const neededIngredients = recipeIngredientsResult.rows.filter(
+      item => !pantryIngredientIds.has(item.ingredient_id)
+    );
+
+    // 4️⃣ Combine identical ingredients across recipes
+    const ingredientMap = new Map();
+
+    neededIngredients.forEach(item => {
+      if (ingredientMap.has(item.ingredient_id)) {
+        const existing = ingredientMap.get(item.ingredient_id);
+        existing.quantities.push(item.quantity);
+      } else {
+        ingredientMap.set(item.ingredient_id, {
+          ingredient_id: item.ingredient_id,
+          ingredient_name: item.ingredient_name,
+          category: item.category || 'Other',
+          quantities: [item.quantity]
+        });
+      }
+    });
+
+    // 5️⃣ Format output
+    const groceryList = Array.from(ingredientMap.values()).map(item => ({
+      ingredient_id: item.ingredient_id,
+      ingredient_name: item.ingredient_name,
+      category: item.category,
+      quantity: item.quantities.join(', ')
+    }));
+
+    // 6️⃣ Group by category
+    const categorizedList = {};
+    groceryList.forEach(item => {
+      const category = item.category || 'Other';
+      if (!categorizedList[category]) {
+        categorizedList[category] = [];
+      }
+      categorizedList[category].push(item);
+    });
+
+    res.status(200).json({
+      totalItems: groceryList.length,
+      categories: categorizedList,
+      flatList: groceryList
+    });
+
+  } catch (error) {
+    console.error('Generate grocery list error:', error);
+    res.status(500).json({
+      error: 'Failed to generate grocery list',
+      message: error.message
+    });
+  }
+};
+
 module.exports = {
   searchRecipes,
   getRecipeDetails,
   getRandomRecipe,
   saveRecipe,
   getSavedRecipes,
-  deleteSavedRecipe
+  deleteSavedRecipe,
+  generateGroceryList
 };

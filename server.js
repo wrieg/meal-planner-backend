@@ -2,19 +2,28 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
+// Initialize Express app
+const app = express();
+const PORT = process.env.PORT || 5001;
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Middleware - CORS must be FIRST
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 // Import database config
 const { testConnection } = require('./src/config/database');
 
 const authRoutes = require('./src/routes/authRoutes');
 
-// Initialize Express app
-const app = express();
-const PORT = process.env.PORT || 5000;
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Import pantry routes (add with other imports)
+const pantryRoutes = require('./src/routes/pantryRoutes');
 
 // Request logging middleware
 app.use((req, res, next) => {
@@ -49,7 +58,8 @@ const recipeRoutes = require('./src/routes/recipeRoutes');
 
 // API Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/recipes', recipeRoutes);  // ADD THIS LINE
+app.use('/api/recipes', recipeRoutes);
+app.use('/api/pantry', pantryRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -74,7 +84,7 @@ const server = app.listen(PORT, () => {
   console.log(`🚀 ForDinner API Server Started`);
   console.log(`📡 Port: ${PORT}`);
   console.log(`🌐 URL: http://localhost:${PORT}`);
-  console.log(`💚 Health: http://localhost:5000/api/health`);
+  console.log(`💚 Health: http://localhost:5001/api/health`);
   console.log('=================================');
   
   // Test database connection after server starts

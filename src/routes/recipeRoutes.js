@@ -6,8 +6,10 @@ const {
   getRandomRecipe,
   saveRecipe,
   getSavedRecipes,
-  deleteSavedRecipe
+  deleteSavedRecipe,
+  generateGroceryList
 } = require('../controllers/recipeController');
+
 const authenticateToken = require('../middleware/authMiddleware');
 
 // Public routes (no auth required)
@@ -19,5 +21,7 @@ router.get('/:mealId', getRecipeDetails);
 router.post('/save', authenticateToken, saveRecipe);
 router.get('/saved/all', authenticateToken, getSavedRecipes);
 router.delete('/saved/:recipeId', authenticateToken, deleteSavedRecipe);
+router.post('/grocery-list', authenticateToken, generateGroceryList);
 
 module.exports = router;
+
